@@ -1,3 +1,7 @@
+// future optimization, make all the matrix methods return new matrices maybe
+// alternative keep changing the original matrix, but make a copy outside of this class
+
+
 public class Matrix {
 	private int rows, cols;
 	private double[][] fullMatrix;
@@ -17,6 +21,18 @@ public class Matrix {
 	public int[] dimensions() {
 		int[] dims = { rows, cols };
 		return dims;
+	}
+
+	public Matrix transpose() {
+		double[][] rd = new double[cols][rows];
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				rd[j][i] = fullMatrix[i][j];
+			}
+		}
+		Matrix r = new Matrix(rd);
+		return r;
+
 	}
 
 	public double get(int r, int c) {
@@ -44,16 +60,41 @@ public class Matrix {
 		return r;
 	}
 
-	public void add(Matrix otherMatrix) {
+	public Matrix exp(double k) {
+		double[][] fm = new double[dimensions()[0]][dimensions()[1]];
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				fm[i][j] = Math.pow(fullMatrix[i][j],k);
+			}
+		}
+		Matrix r = new Matrix(fm);
+		return r;
+	}
+
+	public Matrix add(Matrix otherMatrix) {
+		double[][] fm = new double[dimensions()[0]][dimensions()[1]];
 		if (checkDimensionsEqual(otherMatrix)) {
 			for (int i = 0; i < rows; i++) {
 				for (int j = 0; j < cols; j++) {
-					fullMatrix[i][j] += otherMatrix.get(i, j);
+					fm[i][j] = fullMatrix[i][j] + otherMatrix.get(i, j);
 				}
 			}
+			Matrix r = new Matrix(fm);
+			return r;
 		} else {
 			throw new IllegalArgumentException();
 		}
+	}
+
+	public Matrix scalarAddition(double k) {
+		double[][] fm = new double[dimensions()[0]][dimensions()[1]];
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				fm[i][j] = fullMatrix[i][j] + k;
+			}
+		}
+		Matrix r = new Matrix(fm);
+		return r;
 	}
 
 	private Vector[] getRowVectors() {
@@ -65,15 +106,18 @@ public class Matrix {
 		}
 		return r;
 	}
-	
-	public void scalarMultiplication(double k) {
+
+	public Matrix scalarMultiplication(double k) {
+		double[][] fm = new double[dimensions()[0]][dimensions()[1]];
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < cols; j++) {
-				fullMatrix[i][j] *= k;
+				fm[i][j] = fullMatrix[i][j] * k;
 			}
 		}
+		Matrix r = new Matrix(fm);
+		return r;
 	}
-	
+
 	public Vector cross(Vector otherVector) {
 		if (this.dimensions()[1] == otherVector.dimensions()[0]) {
 			double[][] r = new double[this.dimensions()[0]][otherVector.dimensions()[1]];
@@ -88,4 +132,32 @@ public class Matrix {
 		}
 	}
 
+	public Matrix correspondingMultiplication(Matrix otherMatrix) {
+		double[][] fMatrix = new double[dimensions()[0]][dimensions()[1]];
+		if (checkDimensionsEqual(otherMatrix)) {
+			for (int i = 0; i < rows; i++) {
+				for (int j = 0; j < cols; j++) {
+					fMatrix[i][j] = get(i, j) * otherMatrix.get(i, j);
+				}
+			}
+			Matrix r = new Matrix(fMatrix);
+			return r;
+		}
+		throw new IllegalArgumentException();
+	}
+
+
+	// public Matrix correspondingMultiplication(Vector otherVector) {
+	// 	double[][] fMatrix = new double[dimensions()[0]][dimensions()[1]];
+	// 	if (checkDimensionsEqual(otherMatrix)) {
+	// 		for (int i = 0; i < rows; i++) {
+	// 			for (int j = 0; j < cols; j++) {
+	// 				fMatrix[i][j] = get(i, j) * otherMatrix.get(i, j);
+	// 			}
+	// 		}
+	// 		Matrix r = new Matrix(fMatrix);
+	// 		return r;
+	// 	}
+	// 	throw new IllegalArgumentException();
+	// }
 }

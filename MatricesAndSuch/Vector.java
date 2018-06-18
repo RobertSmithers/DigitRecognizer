@@ -8,7 +8,7 @@ public class Vector {
 		cols = 1;
 		fullVector = new double[rows][cols];
 	}
-	
+
 	public Vector(double[] fVector) {
 		rows = fVector.length;
 		cols = 1;
@@ -23,6 +23,27 @@ public class Vector {
 		rows = fullVector.length;
 		cols = 1;
 	}
+
+	public Vector sigmoid() {
+		double[] fVector = new double[dimensions()[0]];
+		for (int i = 0; i < rows; i++) {
+			fVector[i] = 1 / (1 + Math.exp(fullVector[i][0]));
+		}
+		Vector f = new Vector(fVector);
+		return f;
+	}
+
+	public Vector sigmoidDerivative() {
+		double[] fVector = new double[dimensions()[0]];
+		double d,etothenegativez;
+		for (int i = 0; i < rows; i++) {
+        	etothenegativez = Math.exp(-fullVector[i][0]);
+        	d = etothenegativez / (Math.pow(1 + etothenegativez, 2));
+			fVector[i] = d;
+        }
+		Vector f = new Vector(fVector);
+		return f;
+    }
 
 	public int[] dimensions() {
 		int[] dims = { rows, cols };
@@ -52,18 +73,42 @@ public class Vector {
 		return r;
 	}
 
-	public void scalarMultiplication(double k) {
+	public Vector scalarMultiplication(double k) {
+		double[] fVector = new double[dimensions()[0]];
 		for (int i = 0; i < rows; i++) {
-			fullVector[i][0] *= k;
+			fVector[i] = fullVector[i][0] * k;
 		}
-
+		Vector f = new Vector(fVector);
+		return f;
 	}
 
-	public void add(Vector otherVector) {
+	public Vector exp(double k) {
+		double[] fVector = new double[dimensions()[0]];
+		for (int i = 0; i < rows; i++) {
+			fVector[i] = Math.pow(fullVector[i][0], k);
+		}
+		Vector f = new Vector(fVector);
+		return f;
+	}
+
+
+	public Vector scalarAddition(double k) {
+		double[] fVector = new double[dimensions()[0]];
+		for (int i = 0; i < rows; i++) {
+			fVector[i] = fullVector[i][0] + k;
+		}
+		Vector f = new Vector(fVector);
+		return f;
+	}
+
+	public Vector add(Vector otherVector) {
+		double[] fVector = new double[dimensions()[0]];
 		if (checkDimensionsEqual(otherVector)) {
 			for (int i = 0; i < rows; i++) {
-				fullVector[i][0] += otherVector.get(i, 0);
+				fVector[i] += fullVector[i][0] + otherVector.get(i, 0);
 			}
+			Vector r = new Vector(fVector);
+			return r;
 		} else {
 			throw new IllegalArgumentException();
 		}
@@ -78,5 +123,28 @@ public class Vector {
 			return p;
 		}
 		throw new IllegalArgumentException();
+	}
+
+	public Vector correspondingMultiplication(Vector otherVector) {
+		double[] fVector = new double[dimensions()[0]];
+		if (checkDimensionsEqual(otherVector)) {
+			for (int i = 0; i < rows; i++) {
+				fVector[i] = get(i, 0) * otherVector.get(i, 0);
+			}
+			Vector r = new Vector(fVector);
+			return r;
+		}
+		throw new IllegalArgumentException();
+	}
+
+	public Matrix iterativeDivision(Vector denominatorVector) {
+		double[][] fMatrix = new double[dimensions()[0]][denominatorVector.dimensions()[0]];
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < denominatorVector.dimensions()[0]; j++) {
+				fMatrix[i][j] = get(i, 0) / denominatorVector.get(j, 0);
+			}
+		}
+		Matrix r = new Matrix(fMatrix);
+		return r;
 	}
 }
