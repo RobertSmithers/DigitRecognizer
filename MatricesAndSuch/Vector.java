@@ -101,6 +101,18 @@ public class Vector {
 		return f;
 	}
 
+	public Matrix transpose() {
+		double[][] rd = new double[cols][rows];
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				rd[j][i] = fullVector[i][j];
+			}
+		}
+		Matrix r = new Matrix(rd);
+		return r;
+	}
+
+
 	public Vector add(Vector otherVector) {
 		double[] fVector = new double[dimensions()[0]];
 		if (checkDimensionsEqual(otherVector)) {
@@ -146,5 +158,21 @@ public class Vector {
 		}
 		Matrix r = new Matrix(fMatrix);
 		return r;
+	}
+
+	// Prerequisite: othervector is of the form 1 x n
+	public Matrix cross(Matrix otherVector) {
+		if (this.dimensions()[1] == otherVector.dimensions()[0]) {
+			double[][] r = new double[this.dimensions()[0]][otherVector.dimensions()[1]];
+			for (int i = 0; i < r.length; i++) {
+				for (int j = 0; j < r[0].length; j++) {
+					r[i][j] = get(i, 0) * otherVector.get(0, j);
+				}
+			}
+			Matrix returnVector = new Matrix(r);
+			return returnVector;
+		} else {
+			throw new IllegalArgumentException();
+		}
 	}
 }

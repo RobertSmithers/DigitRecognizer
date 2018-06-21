@@ -32,7 +32,6 @@ public class Matrix {
 		}
 		Matrix r = new Matrix(rd);
 		return r;
-
 	}
 
 	public double get(int r, int c) {
